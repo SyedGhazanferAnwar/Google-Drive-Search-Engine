@@ -101,26 +101,3 @@ def fetch(credentials,sort='modifiedTime desc'):
 
 if __name__ == '__main__':
     app.run()
-
-
-
-# Download_files code
-
-# all_files = fetch("'root' in parents and mimeType = 'application/vnd.google-apps.folder'", sort='modifiedTime desc')
-
-
-# s = ""
-# for file in all_files:
-#     s += "%s, %s<br>" % (file['name'],file['id'])
-# return s
-
-# q = queue.Queue()
-# for ptf in b:
-#     q.put_nowait(ptf)
-# for _ in range(20):
-#     Worker(q, otherarg).start()
-# q.join()  # blocks until the queue is empty.
-
-
-# get
-# flask.request.args.get('client_id')
