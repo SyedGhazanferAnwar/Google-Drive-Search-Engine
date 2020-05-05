@@ -18,9 +18,11 @@ class Worker(threading.Thread):
                 file = self.que.get()  # 3s timeout then close the thread timeout=3
             except queue.Empty:
                 return
-            file_id=file['id']
-            file_name=file['name']
-            if not os.path.exists("Data\\"+self.credentials.client_id+"\\"+file_name):
+            file_id=file["id"]
+            file_name=file["name"]
+
+            # To avoid downloading files that already exists
+            if not os.path.exists(os.path.join("Data",file_name)):
                 print(f"${file_name} downloading")
                 self.download_file(file_id,file_name)
 
@@ -28,17 +30,18 @@ class Worker(threading.Thread):
             self.que.task_done()
 
     def download_file(self,file_id, output_file):
-        credentials = self.credentials
-        http = credentials.authorize(httplib2.Http())
-        service = discovery.build('drive', 'v3', http=http)
-        request = service.files().get_media(fileId=file_id)
-        if not os.path.exists("Data\\"+credentials.client_id):
-            os.mkdir("Data\\"+credentials.client_id)
-        fh = open("Data\\"+credentials.client_id+"\\"+output_file,'wb')
-        downloader = MediaIoBaseDownload(fh, request)
-        done = False
-        while done is False:
-            status, done = downloader.next_chunk()
-            print ("Download %d%%." % int(status.progress() * 100))
-        fh.close()
+        try:
+            credentials = self.credentials
+            http = credentials.authorize(httplib2.Http())
+            service = discovery.build("drive", "v3", http=http)
+            request = service.files().get_media(fileId=file_id)
+            fh = open(os.path.join("Data",output_file),"wb")
+            downloader = MediaIoBaseDownload(fh, request)
+            done = False
+            while done is False:
+                status, done = downloader.next_chunk()
+                print ("Download %d%%." % int(status.progress() * 100))
+            fh.close()
+        except Exception as e:
+            print(e)
 
