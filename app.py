@@ -7,11 +7,15 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 import queue
-from WorkerThread.WorkerThread import Worker
+from WorkerThreads.DownloadWorker import DownloadWorker
+from WorkerThreads.IndexerWorker import IndexerWorker
 from flask import jsonify
+import glob
 
 app = flask.Flask(__name__)
 NUM_OF_THREADS=10
+downloadQueue = queue.Queue()
+indexerQueue = queue.Queue()
 
 # Dummy route
 @app.route("/")
@@ -63,18 +67,24 @@ def download_files():
         return jsonify(Message="Authentication Failed",status=403)
 
     all_files = fetch(credentials,sort="modifiedTime desc")
-    que = queue.Queue()
     
     for file in all_files:
-        que.put_nowait(file)
+        downloadQueue.put_nowait(file)
 
     for _ in range(NUM_OF_THREADS):
-        Worker(que,credentials).start()
-    que.join() 
+        DownloadWorker(downloadQueue,credentials).start()
+    downloadQueue.join() 
 
     return jsonify(Message="Downloaded Sucessfully",client_id=credentials.client_id,status=200)
 
+@app.route("/index_files")
+def index_files():
+    for filename in glob.glob(os.path.join("Data","raw","*")):
+        indexerQueue.put_nowait(filename)
+    for _ in range(NUM_OF_THREADS):
+        IndexerWorker(indexerQueue).start()
 
+    return jsonify(Message="Indexing Completed Sucessfully",status=200)
 
 # Part of /authenticate, Utility function for checking the credentials validity
 def get_credentials():
