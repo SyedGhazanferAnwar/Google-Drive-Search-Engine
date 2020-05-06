@@ -7,6 +7,8 @@ from oauth2client.file import Storage
 import io
 import httplib2
 import textract
+
+
 class IndexerWorker(threading.Thread):
     def __init__(self, que, *args, **kwargs):
         self.que = que
