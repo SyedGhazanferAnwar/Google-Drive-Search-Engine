@@ -1,0 +1,682 @@
+Exploring and Innovating Perceptually Realistic Image Super Resolution using GANs
+
+
+
+FYP-1 Final Presentation
+
+
+
+
+
+Submitted By
+
+Syed Ghazanfer Anwar
+
+16K-3891
+
+
+
+Salman Arshad
+
+16K-3898
+
+			
+
+			
+
+			
+
+Sir Nadeem Kafi
+
+
+
+			
+
+			
+
+			
+
+			
+
+			
+
+			
+
+			Department of Computer Science
+
+			National University of Computer & Emerging Sciences
+
+			
+
+			
+
+			TABLE OF CONTENTS
+
+			
+
+1.	The statement of title	4
+
+2.	Abstract	4
+
+3.	Introduction	4
+
+4.	Objective	5
+
+5.	Problem Statement	5
+
+6.	FYP Literature Review:	5
+
+		6.1	Generative Adversarial Nets [2]	5
+
+		6.2	A Fully Progressive Approach to Single-Image Super-Resolution [10]	6
+
+		6.3	Perceptual Losses for Real-Time Style Transfer and Super-Resolution [9]	6
+
+		6.4	Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network [1]	7
+
+		6.5	ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks [11]	7
+
+		6.6	The relativistic discriminator: a key element missing from standard GAN [8].	8
+
+		6.7	Recovering Realistic Texture in Image Super-resolution by Deep Spatial Feature Transform [15]	8
+
+		6.8	Deep Back-Projection Networks for Super-Resolution [12]:	9
+
+		6.9	Image Super-Resolution Using Very Deep Residual Channel Attention Networks [17]	10
+
+		6.10	Residual Dense Network for Image Super-Resolution [18]	10
+
+		6.11	Temporally Coherent GANs for Video Super-Resolution         (TecoGAN) [19]	11
+
+		6.12	Deep Photo Enhancer: Unpaired Learning for Image Enhancement from Photographs with GANs [20]	12
+
+7	Methodology	13
+
+8	Experiments	14
+
+		8.1	Photo-realistic single image super-resolution using a generative adversarial network [1]	14
+
+		8.1.1	Network architecture:	14
+
+		8.1.1.1	The Generator Model	14
+
+		8.1.1.2	The Discriminator Model:	15
+
+		8.1.1.3	Perceptual Loss Function:	15
+
+		8.1.2	Training details and parameters:	16
+
+		8.2	A Fully Progressive Approach to Single-Image Super-Resolution [10]:	19
+
+		8.2.1	Network Architecture	19
+
+		8.2.1.1	Pyramidal Decomposition	20
+
+		8.2.1.2	Dense Compression units	20
+
+		8.2.1.3	Dense Blocks	20
+
+		8.2.2	Training details and parameters:	20
+
+		8.2.3	Results:	21
+
+9	Conclusion:	22
+
+10	Appendix:	22
+
+		10.1	Steps performed to run code:	22
+
+11	References:	26
+
+
+
+
+The statement of title 
+
+We will be Exploring Perceptually Realistic Image Super Resolution [1] and A Fully Progressive Approach to Single-Image Super-Resolution [10] using Generative Adversarial Networks (GAN) architecture. Exploration will include complete analysis of the architecture and result for the aforementioned papers.
+
+
+
+Abstract 
+
+By the advancement in modern era we have a handsome amount of data, but the data is often not in a good quality or some fine tuning is required to it.  If we refer to image data, the images are often in low resolution and some major details are missing in the image. To counter this problem there is a technique called Image Super Resolution. Enhancing the quality of a lower resolution image by adding missing pixels and texture details by increasing its dimensions (upscaling) is known as Image Super Resolution (ISR). ISR has been an area of interest for a past decade but techniques used like bicubic interpolation were not giving satisfactory results so new methods have been proposed which includes usage of Convolutional Neural Networks (CNN), Generative Adversarial Network [2] and Residual Networks [3] to achieve Image Super Resolution. The paper SRGAN [1] uses GANs [2] along with Residual Networks [3] for the Generator (Part of GANs that generates data). We have implemented two research papers a fully progressive approach to single-image super-resolution [10] and Photo-realistic single image super-resolution using a generative adversarial network. [1]. 
+
+Introduction  
+
+Super Resolution has been an area of research for a long period of time. Initially, prediction-based methods (Linear, Bicubic interpolation etc.) were opted to target this problem. But they didn’t seem to produce results closer to original image as they overly smooth the textures. Dong et al. [6] was the first to show that by using CNN, we can obtain much better results. Dong used bicubic interpolation to upscale the image then passed those up-scaled images to the CNN which learned the finer details and results in much better images as in comparison with only Interpolation. Later, it was established that using the neural network itself to upscale images rather than using bi-cubic interpolation not only boost the performance but also reduces training time. Later, GANs were proposed by Ian Goodfellow et al. [2] which gave super resolution a new dimension. The use of Generative adversarial networks in super resolution leads to sharp images that are closer to real images. That is why most of the recent state of the art Super Resolution techniques used GANs in their proposed architecture.
+
+
+
+
+
+
+
+
+
+Objective 
+
+
+
+The goal of this project is to implement two research papers, A fully progressive approach to single-image super-resolution [10] and Photo-realistic single image super-resolution using a generative adversarial network [1] and comparing their results. We have tried to reproduce the expected results and then draw comparison between the architectures used in the paper and their corresponding result. Further, we will use this knowledge to try to implement our own methodology for implementing Single Image Super Resolution (SISR) to potentially achieve better results. We will also compare the Inception [5] and YOLO [7] models for feature extraction in place of VGG19 [4] as was used in SRGAN [1] to extract features of the image and draw conclusions.
+
+
+
+Problem Statement 
+
+Recent Super Resolution algorithms are not generating high resolution images that are close to real images and looks overly smooth. So, we will compare two previous architectures and propose a Perceptually Realistic Image Super Resolution technique that will generate realistic images by minimizing the perceptual loss.
+
+
+
+FYP Literature Review:
+
+
+
+Generative Adversarial Nets [2]
+
+
+
+This Research paper by Ian Goodfellow introduced the Generative Adversarial Networks (GANs). The popularity of GANs lies behind the idea of eliminating approximate inference or Markov chains and letting the networks compete to find the best output.
+
+The basic idea of GANs is to simultaneously train two models; Discriminator and Generator. The Discriminator is designed to differentiate between Real and Fake (Generated) data while the generator is designed to generate data. The term adversarial comes from the fact that both generator and discriminator are competing that corresponds to a minimax two-player game. The aim of generator is to generate such fake data that is indistinguishable from the real data or in other words the discriminator cannot find which data is real or which data is generated. The analogy used in paper to explain this concept is of police and counterfeiters. The police are discriminator and generator are counterfeiters. The counterfeiters try to generate fake money while the police try to detect whether the money is generated (Fake) or real. This competition goes on until the counterfeiters are able to make money that is indistinguishable from real money.
+
+
+
+minGmaxD V (D, G) = Ex∼pdata(x) [log D(x)] + Ez∼pz(z) [log(1 − D(G(z)))]
+
+
+
+
+
+
+
+A Fully Progressive Approach to Single-Image Super-Resolution [10]
+
+
+
+The following paper proposes PROGANSR that is progressive in both architecture and training. The network up-scales an image in intermediate steps i.e. first learns the easier task and then builds on top of it which is similar to what we achieve in Curriculum Learning. To achieve more photorealistic images, the network upscales the images gradually i.e. First upscaling 2x then using that image to upscale to 4x and so on. This way the finer details of the image is preserved, and the network is able to upscale images to higher resolution without losing the finer details and yet maintaining the high PSNR.
+
+Further, this paper proposes use of Deep Neural Network (DNN) that are trained in fully supervised manner by feeding the LR image with their corresponding HR image. Similar to usage of VGG as proposed in the above paper DNN are able to extract feature representation in the input image. 
+
+The paper also discusses the two methods of up-scaling the LR images. First is to up-scale the images using bilinear interpolation or similar techniques and then use the network to de-blur the image. But this mechanism tends to lose the finer details in the image and requires heavy memory usage. The second method is to use the neural network to up-scale the images by using the transposed convolution layer. This method tends to be efficient as well as better in performance but is prone to checkboard artifacts. The research paper uses the 2nd method but due to the fact that this paper uses Progressive approach that is why it avoid the checkboard artifact issues.
+
+
+
+Perceptual Losses for Real-Time Style Transfer and Super-Resolution [9]
+
+
+
+This paper proposes the usage of Perceptual loss functions for training the network instead of using per-pixel loss (similarity in pixel space like in MSE). The proposed perceptual loss is applied to Real-time style transfer and it is observed that the proposed perceptual loss function gives the same qualitative results but are 3 times faster. The perceptual loss was also applied to the Super-Resolution replacing the Per-pixel loss and visually pleasant images were obtained.
+
+The ideology of the paper is based on the fact, that Per-pixel loss are not capable of capturing the perceptual differences between output and ground-truth images. The example used to elaborate this fact is to consider two identical images offset from each other by one pixel, despite their perceptual similarity they would be very different as measured by per-pixel losses.
+
+The paper uses feed forward transformation networks for image transformation tasks, but rather than using per-pixel loss functions depending only on low-level pixel information, they train the networks using perceptual loss functions that depend on high-level features from a pre-trained loss network i.e. VGG16 (A 16-layer trained VGG network). During training, perceptual losses measure image similarities more robustly than per-pixel losses, and at test-time the transformation networks run in real-time
+
+Note: The paper was proposed in March 2016 and at that time using GANS for super resolution was not achieved. So, this paper uses a simple convolutional Neural Network for transforming a low-resolution image to High resolution, but the concept of perceptual loss is quite frequently used in the recent papers.
+
+
+
+
+
+Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Network [1]
+
+
+
+
+
+The task of estimating a high-resolution image from its low-resolution image is termed as super-resolution (SR).
+
+The target of SR algorithms is commonly the minimization of the mean squared error (MSE) between the generated High Resolution (HR) image and the original image.This minimization of MSE also maximizes the peak signal-to-noise ratio (PSNR), which is a common measure used to evaluate and compare SR algorithms. But the issue with optimizing MSE and PSNR is that they fail to capture perceptually relevant differences resulting in less vibrant images yet having good MSE and PSNR scores.
+
+
+
+[ MSE loss function]
+
+So, to counter this problem, the paper proposes a new loss function i.e. content loss motivated by perceptual similarity rather than similarity in pixel space as in MSE, alongside with adversarial loss to discriminate between original and super-resolved images.
+
+The content loss instead of relying on Pixel wise loss (MSE) is based on activation layers (Leaky ReLU) of VGG-19 network, which is a pretrained 19 layers image classifier.This loss uses the feature map extracted by VGG-19 to find loss.
+
+Further, this paper proposes the usage of 16 blocks deepResNet (SRResNet) optimized for MSE with skip-connection. This Resnet increases the performance in terms of the speed for the training as well as the prediction.
+
+
+
+ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks [11]
+
+
+
+This paper is based on Photo-Realistic Single Image Super-Resolution Using a Generative Adversarial Networks [1]. According to this paper SRGAN is a breakthrough in the field of Super Resolution. However, the illusional details are often accompanied with unpleasant artifacts. To further enhance the Super-resolved image, they proposed three main changes to SRGAN network's architecture's and loss function, the results were consistently better in visual quality and more natural textures were restored as compared to SRGAN. 
+
+The first and most important change they proposed to the SRGAN’s generator architecture was removing all Batch Normalization layers and replace the basic Dense block with Residual-in-Residual Dense blocks. The reason for removing batch normalization is that the Batch Normalization layers normalize the features using mean and variance in a batch during training and use estimated mean and variance of the whole training dataset during testing. Whenever there is a niche difference in training and testing sets the Batch Normalization layers are prone to add some unpleasant details or noise. Therefore, removing BN layers makes the model more stable and easier to train in a GAN framework. They also replaced the dense residual block with a Residual-in-residual block it is done based on the observations that a deeper network with more connections will always boost performance.
+
+Second major change they made to the SRGAN’s architecture is that they used Relativistic Discriminator [8]. Different from the standard discriminator which estimates the reality or fakeness of the generated sample it tries to predict the probability that the real image is relatively more real than the fake one. Thus, give more perceptually realistic loss for the generator.
+
+They also modify the perceptual loss or content loss of SRGAN’s architecture using features before the activation layers in VGG rather than constraining on them after activation because the activated features are very sparse. The sparse activation provides weak supervision and thus leads to inferior performance. Also using features after activation add unrealistic brightness in the reconstructed image as compared to Ground Truth reality
+
+
+
+The relativistic discriminator: a key element missing from standard GAN [8].
+
+
+
+In standard generative adversarial network (SGAN), the discriminator estimates the probability that the input data is real or fake. The generator G is trained to generate such samples that fools the Discriminator by generating sample that look real data is real. This paper argues that the probability of real data being real should be decreased as the probability of fake data being real increase. 
+
+In standard GAN the discriminator and generator become optimal, which means that every sample either generated or picked from training dataset according to the discriminator is real. This completely ignores the fact that half of the input to the discriminator is fake and the expected value for D(x) should be 0.5. The RSGAN paper(proposed)contests whether the discriminator is making sensible predictions by decreasing D(xr) as D(xf ) increases
+
+When the discriminator is optimal then the gradient for the discriminator mostly comes from the fake images the discriminator stops learning from real images and learns mostly from fakes only. At that point, SGAN is not learning how to make images more natural. In contrast, RSGAN learns from both as its gradients depend on both real and fake images due to the above-mentioned fact.
+
+
+
+
+
+Recovering Realistic Texture in Image Super-resolution by Deep Spatial Feature Transform [15]
+
+This paper by Zhen Li et al, emphasis on need of a categorical prior to upscale an image form LR to HR because it is very impractical to restore textures from LR to HR without knowing the domain of the LR image. The paper demonstrated that how prior can contribute to different outcome on same image 
+
+
+
+After emphasizing on prior the paper, the paper discusses two different approaches for using categorical prior, one is to train separate CNN based SR models on different classes of dataset e.g. plants, animals etc. But this approach is neither scalable nor computationally feasible. So, in this paper they present a novel approach known as Spatial Feature Transform (SFT). The SFT layer works on the on the basis of semantic segmentation profanity maps. 
+
+This model says that the semantic categorical prior, i.e., knowing which region belongs to the plants, mountains, or grass, is needed for generating richer and more realistic textures. The categorical prior Ψ can be conveniently represented by semantic segmentation probability maps P,
+
+
+
+Where p represents the probability of category and k represent number of categories. So now the equation of model will be 
+
+
+
+The SFT layers then learn the mapping function and outputs a modulation parameter pair (γ, β) based on some prior condition Ψ, more precisely the equation transform to
+
+
+
+
+
+Deep Back-Projection Networks for Super-Resolution [12]:
+
+
+
+This paper [12] by Muhammad Haris claims that trivial super resolution algorithms uses a feed forward network to calculate the High-Resolution image from its low-resolution counterpart, this works by learning the features maps from HR image. On contrary this paper [8] is based on the concept that human visual system is believed to use a feedback connection to simply guide the task for the relevant results. So, the current feed forward network meta is hampered due to lack of iterative back propagated loss about the HR image especially in large upscaling factors. 
+
+This paper proposes a novel solution for achieving image super resolution is by using iterative up sampling and down sampling approach. This approach which gives both up and down projection loss on each upscaling and downscaling iteration hence getting better results.
+
+
+
+
+
+In traditional feedforward only networks the only one-way mapping of rich features from LR to HR is learned, which is not suitable for large upscaling factors. So, their approach not only generates HR image features but also projects it back to LR space using down-sampling layers.
+
+
+
+  Image Super-Resolution Using Very Deep Residual Channel Attention Networks [17]
+
+This paper by Yulun Zhang et al.  claims the fact that in Image Super Resolution there  are often low frequency details that can be skipped and transferred directly to the HR images but recent work in domain of Image super Resolution is CNN based and the problem here is that in trivial CNN based architecture is that  all the information in the LR must be processed to obtain corresponding HR image which limits the formation of very large networks to properly learn the nonlinear mapping from Low Resolution images to High Resolution Images as large networks need more computational power and time to get trained. 
+
+So, to counter this problem Yulun Zhang et al. has proposed a novel Super Resolution architecture a Residual Channel Attention Network (RCAN) to obtain very deep neural network and according to them up to 400 layers. They also propose a Residual-in-Residual structure where several residual groups (RG) having long skip connections and each RG block they stacked several smaller residual blocks with several short skip connections, these long and short skip connections allow low frequency information to bypass the network and ease the information flow through the network. They also propose channel attention (CA) mechanism to adaptively rescale each channel-wise feature by modeling the interdependencies across feature channels. Such CA mechanism allows the proposed network to concentrate more on high frequency details.
+
+
+
+
+
+Residual Dense Network for Image Super-Resolution [18]
+
+
+
+This paper proposes a novel residual dense network (RDN). The intuition behind this network is that deep CNN based super-resolution models do not make full use of the hierarchical features from the original low-resolution (LR) images, thereby achieving relatively-low performance. This paper focuses on exploiting the hierarchical features from all the convolutional layers. Residual Dense Blocks are proposed to extract abundant local features via dense connected convolutional layers. Below is an attached figure explain the construction of Residual Dense Block.
+
+
+
+The residual dense block make use of both the dense block [24] (Connection via channel wise concatenation) and residual block [23] (the skip connections). Hence achieve good results and simultaneously are not susceptible to gradient vanishing problem.
+
+
+
+In the above figure, is the proposed network architecture of Residual Dense Network. This Residual Dense Network mainly consists four parts: shallow feature extraction net, residual dense blocks (RDBs), dense feature fusion (DFF), and finally the up-sampling net. Through this technique the paper was able to obtain state of the art results in terms of Peak Signal to Noise Ratio (PSNR) and Structural Similarity Index (SSIM).
+
+
+
+
+
+Temporally Coherent GANs for Video Super-Resolution         (TecoGAN) [19]
+
+
+
+This paper proposes first method for an adversarial and recurrent training approach that supervises both spatial high-frequency details, as well as temporal relationships. The domain of Video Super Resolution is relatively less explored in comparison with Image Super Resolution. That is why, in video super-resolution (VSR), existing methods still pre-dominantly use standard losses such as the mean squared error instead of adversarial ones. Despite the face it is proven that adversarial losses perform better than mean square error loss in domain of Super Resolution.
+
+The contribution of this paper also includes the proposal of a novel “Ping-Pong” loss to tackle recurrent artifacts and the introduction of a new metrics for quantifying temporal coherence based on motion estimation and perceptual distance. Further, the paper also proposed a spatio-temporal discriminator for discrimination of Original and super-resolved videos. Below, is the attached architecture diagram of the generator and discriminator proposed by this paper.
+
+
+
+Here, Xt-1, Xt represents the original temporal frames of video fed into the Recurrent Neural Network [22] and gt-1, gt represents the corresponding generated high-resolution frames. Overall, the network architecture consists of three basic components a recurrent generator, a flow estimation network, and a spatio-temporal discriminator. The generator G issued to recurrently generate high-resolution video frames from low-resolution inputs. The flow estimation network F learns the motion compensation between frames to aid both generator as well as the spatio-temporal discriminator. While the Discriminator, differentiates between the original and the generated images as proposed in GAN [2] architecture.
+
+
+
+
+
+Deep Photo Enhancer: Unpaired Learning for Image Enhancement from Photographs with GANs [20]
+
+
+
+This paper proposes a two-way generative adversarial network [2] (GANs) for transforming an input image into an enhanced image. Further, augmentation of the U-Net is implied with global features and shown that it is more effective. Further, Wasserstein GAN [21] (WGAN) with an adaptive weighting scheme is used so that training converges faster and better, and is less sensitive to parameters than WGAN-GP. 
+
+
+
+The method requires a set of “good” photographs as the input, and these inputs are directly proportional to the output result. The work is treated as image-to-image translation problem in which an input image is transformed into an enhanced image with the characteristics embedded in the set of training photographs. Individual batch normalization is also proposed for the generator to better adapt their own distribution.
+
+The main objective of the research paper is to obtain a photo enhancer, which takes an input image and generates an output image Ⴔ(x) as the enhanced version of x. It is however not easy to define enhancement clearly because human perception is complicated and subjective. Instead of formulating the problem using a set of heuristic rules such as “details should be enhanced”or “contrast should be stretched”, we define enhancement by a set of examples Y . That is, we ask the user to provide a set of photographs with the characteristics he/she would like to have and ultimately the network learns those characteristics and is applied to the testing images appropiately.
+
+
+
+Methodology 
+
+
+
+Enhancing the quality of a lower resolution image by adding missing pixels and texture details by increasing its dimensions (upscaling) is known as Image Super Resolution (ISR). There are majorly two types of Image Super Resolution. Namely, Single Image Super Resolution (SISR) and Multi Image Super Resolution (MISR). Multi Image Super Resolution uses more than one low resolution images to construct the corresponding high-resolution image. On the other hand, Single Image Super Resolution uses only one low resolution image to construct corresponding high-resolution image. Our scope will be restricted to Single Image Super Resolution.
+
+We will be implementing two research papers, A fully progressive approach to single-image super-resolution [10] and Photo-realistic single image super-resolution using a generative adversarial network. [1] and comparing their results. Further, at the end we will be using our knowledge to try to implement a better version of SISR using the techniques discussed in the papers. 
+
+Previously, various methods were used to implement Image Super Resolution, which
+
+Includes Bi-cubic Interpolation, Linear Interpolation and other statistical methods but the quality of restored images was not even close to original. But the use of Convolutional Neural Network in SISR has changed the paradigm by making use of feature extraction and Transpose convolutions for upscaling the low-resolution image.
+
+Now, recent research is being done on using GANs (Generative Adversarial Networks) and Resnet (Residual Network) architectures for SISR which tends to produce comparatively realistic and closer to original images. 
+
+After implementing the above-mentioned paper, we will try to reproduce the expected results and then draw comparison between the architectures and results of these papers. 
+
+Further, we will use this knowledge to try to implement our own methodology for implementing SISR to potentially achieve better results. We will also compare the Inception [5] and YOLO [7] models for feature extraction in place of VGG19[4] as was used in SRGAN [1] to extract features of the image and draw conclusions.
+
+
+
+
+
+
+
+Experiments
+
+
+
+So, to understand Image super resolution in a better way we need to implement a research papers on image super resolution. We implemented a state-of-the-art research paper SRGAN [1] and ProSRGAN [10] to fully understand the image super resolution.  
+
+
+
+
+
+
+
+Photo-realistic single image super-resolution using a generative adversarial network [1]
+
+
+
+The traditional techniques used for image super resolution were not generating perceptually realistic images although they have optimal PSNR ratios but they lack in human perceptual details. So, this paper instead of using mathematical models to generate high resolution images it is built upon convolutional neural networks in GAN based architecture.
+
+Network architecture:
+
+The network architecture defined in this paper [1] is based on the architecture of Generative Adversarial Network (GANs) [2]. In this architecture two models play minimax game so that the generator generates the Images similar to original image and discriminator tries to tell which images are real and which images are fake [2].
+
+
+
+The Generator Model
+
+The generator model takes a LR image as an input and passes it to B residual blocks in our case B=16. Each residual block contains two sets a convolution layer followed by Batch Normalization and PReLU [13] activation layer. At the end of B residual blocks two Transposed convolutions are added to upscale the image to 4x of the original size. The output of this model is a HR upscaled image.
+
+
+
+
+
+
+
+The Discriminator Model:
+
+The discriminator model is a simple classifier that take a HR image and tells weather it is an original or generated image. So, it inputs an HR image then applies 8 convolution layers followed by batch normalization and Leaky ReLU after each convolution layer. Batch normalization is added to only first layer After this a Dense layer is added with Leaky ReLU activation and then a single neuron activated by sigmoid to make it a binary classifier.
+
+
+
+
+
+
+
+Perceptual Loss Function:
+
+The major contribution of this paper is the novel perceptual loss function. The pixel-wise MSE loss is calculated as:
+
+                                             
+
+This is the most common measure on quality of Image Super Resolution. Although this gives high PSNR and mse scores, but the image often lacks satisfying features and the textures are overly smooth. So, to counter this problem this paper [1] used the VGG19 features to map MSE. VGG19 is a pretrained Image classifier that can also be used as a feature extractor for MSE. So, the equation now becomes:
+
+
+
+This gives more realistic images as the loss is now based on image features instead of raw MSE.
+
+  
+
+
+
+Training details and parameters:
+
+We trained all networks on an Azure Standard NC6 (6 vcpus, 56 GiB memory) having NVIDIA Tesla K80 GPU using CelebFaces Attributes Dataset (CelebA) [14]. CelebA is a large-scale face attributes dataset with more than 200K celebrity image. The images in this dataset cover large pose variations and background clutter. CelebA has large diversity, large quantities, including 10,177 number of identities. These images are distinct from the testing images. We obtained the LR images by down sampling the HR images using scipy imresize function which uses bytescale internally to resize. We used the down sampling factor r = 4. So, the original images that were 256x256 were down sampled to 64x64. We trained two models using the configuration mentioned above with hyperparameter tweaked to obtain better results in the 2nd model.
+
+The hyperparameter of first model was as follows. Learning rate of 0.0002, batch size of 1, num of epochs 30000 were used. Adam optimizer [16] was used as the sole optimizer and the binary cross entropy and MSE pair was used as the loss function. This set of hyperparameter leads the model to gradient exploding problem in which arbitrary noise was found in certain the images. The problem was majorly found after 10000 epochs in images that contained more white color as value of white in RGB is (255,255,255) which is the max value in RGB and hence leads to gradient exploding. 
+
+`
+
+To encounter the above problem, we tried couple of different things. We tried changing the optimizer to SGD but that didn’t solve the problem. Then we tried to tweak the hyperparameters of the network and that did the trick for us. The updated hyperparameters used were Learning rate of 0.0001 i.e. we half the learning rate to tackle the problem of gradient exploding, batch size of 64, num of epochs was increased to 50000 as we decreased the learning rate. The result was extremely good and we were able to negate the arbitrary noise that was found In the above images. Below are the attached images of the image super resolved using the previous model in comparison with the new model (Trained with updated hyper parameters). Following are the results after updating the hyperparameters.
+
+	``
+
+
+
+Now we tested the model on our test dataset with the tuned model and we were able to get pretty decent results as shown below.
+
+
+
+
+
+
+
+
+
+
+
+A Fully Progressive Approach to Single-Image Super-Resolution [10]:
+
+Recent deep learning-based Image Super resolution techniques have achieved quite impressive results in terms of various error measures including PSNR and SIMM scores but it is still a challenging task to achieve impressive results on high upscaling ratios. This paper proposes a novel architecture ProSRGAN which is Progressive Super Resolution - Generative Adversarial Network. This approach is progressive in both architecture and training that means that it up-sample the images in incremental steps that is it first upscale image to 2x than 4x and so on. There are two most common approaches to achieve image super resolution, first one is to first upscale the image using traditional techniques including bicubic interpolation and other techniques and then learn how to deblur the upscaled image. The second approach is to upscale the image at the end of the processing pipeline. The first approach is computationally intensive as it operates at upscaled images and the second one prone to checkerboard artefacts. So, this paper[10] uses both of these approaches to achieve speed and good perceptual loss scores.
+
+
+
+Network Architecture
+
+
+
+FIG 8.2
+
+The architecture of Progressive Super Resolution GAN (ProSRGAN) is based on progressive training of Generative Adversarial Networks(GAN)[2] architecture.The proposed architecture is mainly composed of the Dense Blocks[18], sub-pixel convolution layers and Dense Compression units.
+
+Pyramidal Decomposition
+
+The network is basically decomposed into Laplacian pyramids based structure. In which each pyramid is composed of several connected Dense Compression Units (DCU) following sub-pixel convolution layer. Each Pyramid in the architecture is responsible for up-sampling the image by 2x such that after the third pyramid the 8x up-sampling of the Low Resolution (LR) image is obtained as refer in fig(8.2).  
+
+
+
+Dense Compression units
+
+Dense Compression units are composed of Dense blocks and compression blocks.The compression blocks are basically just 1x1 convolutions which is used for dimensionality reduction as it reduces the number of channels.
+
+Dense Blocks
+
+The Dense blocks are based on the DenseNet[24] architecture, similar to ResNet providing skip connections that improves gradient flow minimizing the gradient vanishing and gradient exploding problem.
+
+
+
+Training details and parameters:
+
+We trained all networks on an Azure Standard NC6 (6 vcpus, 56 GiB memory) having NVIDIA Tesla K80 GPU using CelebFaces Attributes Dataset (CelebA) [14]. CelebA is a large-scale face attributes dataset with more than 200K celebrity image. The images in this dataset cover large pose variations and background clutter. CelebA has large diversity, large quantities, including 10,177 number of identities. These images are distinct from the testing images. We obtained the LR images by down sampling the HR images using scipy imresize function which uses bytescale internally to resize. We used the down sampling factor r = 4. So, the original images that were 256x256 were down sampled to 64x64.
+
+The hyperparameter used to train the PROSRGAN were as follows. Learning rate of 0.0001, batch size of 16, num of epochs 500 were used. Adam optimizer [16] was used as the sole optimizer and the binary cross entropy and MSE pair was used as the loss function.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Results:
+
+Following are the results obtained from the model
+
+
+
+
+
+
+
+Conclusion:
+
+In this report we have discussed and implemented two research papers SRGAN [1] and  ProSRGAN [10]. Our obtained results are quite similar to the results achieved in the respective research paper. We have also learned the basics of the how the Super Resolution algorithm works which we will be using as our basics for our own possible approach which we will be trying to implement as part 2 of our  FYP.
+
+Appendix:
+
+
+
+Steps performed to run code:
+
+
+
+Founded related code on internet which was implemented on pytorch.
+
+The code was not working properly.
+
+We took help from that code and implemented the code using Keras Tensorflow API.
+
+There were errors in our implementation since we used the Img Align Dataset and it was designed for some other dataset. So, we fixed the image dimension errors. 
+
+First, we wrote the single file code that was not properly readable so we then made the code modular i.e. splitting them in the corresponding files.
+
+
+
+Below is the complete description of our training process of the Paper1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+References:
+
+
+
+[1] Ledig, Christian, Lucas Theis, Ferenc Huszár, Jose Caballero, Andrew Cunningham, Alejandro Acosta, Andrew Aitken et al. "Photo-realistic single image super-resolution using a generative adversarial network." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 4681-4690. 2017.
+
+[2] Goodfellow, Ian, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Ozair, Aaron Courville, and Yoshua Bengio. "Generative adversarial nets." In Advances in neural information processing systems, pp. 2672-2680. 2014.
+
+[3] He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. "Deep residual learning for image recognition." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 770-778. 2016.
+
+[4] Simonyan, Karen, and Andrew Zisserman. "Very deep convolutional networks for large-scale image recognition." arXiv preprint arXiv:1409.1556 (2014).
+
+[5] Szegedy, Christian, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich. "Going deeper with convolutions." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 1-9. 2015.
+
+[6] Dong, Chao, Chen Change Loy, Kaiming He, and Xiaoou Tang. "Learning a deep convolutional network for image super-resolution." In European conference on computer vision, pp. 184-199. Springer, Cham, 2014.
+
+[7] Redmon, Joseph, Santosh Divvala, Ross Girshick, and Ali Farhadi. "You only look once: Unified, real-time object detection." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 779-788. 2016.
+
+[8] Jolicoeur-Martineau, Alexia. "The relativistic discriminator: a key element missing from standard GAN." arXiv preprint arXiv:1807.00734 (2018). 
+
+[9] Johnson, Justin, Alexandre Alahi, and Li Fei-Fei. "Perceptual losses for real-time style transfer and super-resolution." In European conference on computer vision, pp. 694-711. Springer, Cham, 2016.
+
+ [10] Wang, Yifan, Federico Perazzi, Brian McWilliams, Alexander Sorkine-Hornung, Olga Sorkine-Hornung, and Christopher Schroers. "A fully progressive approach to single-image super-resolution." In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition Workshops, pp. 864-873. 2018.	
+
+ [11] Wang, Xintao, Ke Yu, Shixiang Wu, Jinjin Gu, Yihao Liu, Chao Dong, Yu Qiao, and Chen Change Loy. "Esrgan: Enhanced super-resolution generative adversarial networks." In Proceedings of the European Conference on Computer Vision (ECCV), pp. 0-0. 2018.
+
+
+
+[12] Haris, Muhammad, Gregory Shakhnarovich, and Norimichi Ukita. "Deep back-projection networks for super-resolution." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 1664-1673. 2018.
+
+
+
+[13] He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. "Delving deep into rectifiers: Surpassing human-level performance on imagenet classification." In Proceedings of the IEEE international conference on computer vision, pp. 1026-1034. 2015.
+
+[14] Liu, Ziwei, Ping Luo, Xiaogang Wang, and Xiaoou Tang. "Large-scale celebfaces attributes (celeba) dataset." Retrieved August 15 (2018): 2018.
+
+[15] Wang, Xintao, Ke Yu, Chao Dong, and Chen Change Loy. "Recovering realistic texture in image super-resolution by deep spatial feature transform." In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 606-615. 2018.
+
+ [16] Kingma, Diederik P., and Jimmy Ba. "Adam: A method for stochastic optimization." arXiv preprint arXiv:1412.6980 (2014).
+
+[17] Zhang, Yulun, Kunpeng Li, Kai Li, Lichen Wang, Bineng Zhong, and Yun Fu. "Image super-resolution using very deep residual channel attention networks." In Proceedings of the European Conference on Computer Vision (ECCV), pp. 286-301. 2018.
+
+[18] Zhang, Yulun, Yapeng Tian, Yu Kong, Bineng Zhong, and Yun Fu. "Residual dense network for image super-resolution." In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 2472-2481. 2018.
+
+[19] Chu, Mengyu, You Xie, Laura Leal-Taixé, and Nils Thuerey. "Temporally Coherent GANs for Video Super-Resolution (TecoGAN)." arXiv preprint arXiv:1811.09393 (2018).
+
+
+
+[20] Chen, Yu-Sheng, Yu-Ching Wang, Man-Hsin Kao, and Yung-Yu Chuang. "Deep photo enhancer: Unpaired learning for image enhancement from photographs with gans." In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition, pp. 6306-6314. 2018.
+
+
+
+[21] Arjovsky, Martin, Soumith Chintala, and Léon Bottou. "Wasserstein gan." arXiv preprint arXiv:1701.07875 (2017).
+
+
+
+[22] Sherstinsky, Alex. "Fundamentals of recurrent neural network (rnn) and long short-term memory (lstm) network." arXiv preprint arXiv:1808.03314 (2018).
+
+
+
+ [23] He, Kaiming, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. "Deep residual learning for image recognition." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 770-778. 2016.
+
+[24] Huang, Gao, Zhuang Liu, Laurens Van Der Maaten, and Kilian Q. Weinberger. "Densely connected convolutional networks." In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 4700-4708. 2017.
+
+
+
+2

@@ -14,13 +14,18 @@ class IndexerWorker(threading.Thread):
     def run(self):
         while True:
             try:
-                filename = self.que.get(timeout=3)  # 3s timeout then close the thread timeout=3
+                filepath = self.que.get(timeout=3)  # 3s timeout then close the thread timeout=3
             except queue.Empty:
                 return
-            print("Threaded   "+filename)
-            text = textract.process(filename)
-            print(text)
-            # Do task here
+            # print("Threaded   "+filename)
+            text = textract.process(filepath)
+            text=str(text, 'utf-8', 'ignore')
+            # if not os.path.exists(os.path.join("Data","ExtractedText")):
+            #     os.mkdir("ExtractedText")
+            pre, ext = os.path.splitext(os.path.basename(filepath))
+            with open(os.path.join("Data","ExtractedText",pre+".txt"),"w") as f:
+                f.write(text)
+            # print(text)
             # Task done for notifying que.join()
             self.que.task_done()
 
