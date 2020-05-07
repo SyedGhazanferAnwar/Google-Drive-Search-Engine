@@ -10,17 +10,18 @@ import queue
 from WorkerThreads.DownloadWorker import DownloadWorker
 from WorkerThreads.TextExtractWorker import TextExtractWorker
 # from WorkerThreads.IndexerWorker import IndexerWorker
-from flask import jsonify
+from flask import jsonify,request
 import glob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import pickle
 
 app = flask.Flask(__name__)
 NUM_OF_THREADS=10
 downloadQueue = queue.Queue()
 textExtractQueue = queue.Queue()
-
+vectorizer=TfidfVectorizer()
 # Dummy route
 @app.route("/")
 def index():
@@ -95,7 +96,7 @@ def extract_text():
 
 @app.route("/index_files")
 def index_files():
-    vectorizer = TfidfVectorizer()
+    #vectorizer = TfidfVectorizer()
     filesPath,data=getDatasetFromFiles()
     trainedModel = vectorizer.fit_transform(data)
 
@@ -116,6 +117,7 @@ def search():
         trainedModel = pickle.load(trainedModelFile)
     with open(os.path.join("Data","filesPath.pkl"), "rb") as _file:
         filesPath = pickle.load(_file)
+    #vectorizer=TfidfVectorizer()
     query = request.args.get("query")
     query = "image and"
     query_vec = vectorizer.transform([query])
@@ -170,4 +172,6 @@ if __name__ == "__main__":
         os.mkdir("Data")
     if not os.path.exists(os.path.join("Data","ExtractedText")):
         os.mkdir(os.path.join("Data","ExtractedText"))
+    if not os.path.exists(os.path.join("Data","raw")):
+        os.mkdir(os.path.join("Data","raw"))
     app.run()

@@ -30,11 +30,11 @@ class DownloadWorker(threading.Thread):
             # Task done for notifying que.join()
             self.que.task_done()
 
-    def validFile(file_name):
+    def validFile(self,file_name):
         supportedExt=[".csv",".doc",".docx",".epub",".eml",".gif",".jpg",".jpeg",".json",".html",
         ".htm",".mp3",".msg",".odt",".ogg",".pdf",".png",".pptx",".ps",".rtf",".tiff",".tif",".txt",
         ".wav",".xlsx",".xls"]
-        pre, ext = os.path.splitext(os.path.basename(_file))
+        pre, ext = os.path.splitext(os.path.basename(file_name))
         print(ext)
         if ext in supportedExt:
             return True
