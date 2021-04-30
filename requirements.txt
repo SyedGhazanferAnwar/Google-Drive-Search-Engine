@@ -39,7 +39,7 @@ pylint==2.5.0
 python-pptx==0.6.18
 pytz==2020.1
 requests==2.23.0
-rsa==4.0
+rsa==4.7
 scikit-learn==0.22.2.post1
 scipy==1.4.1
 six==1.12.0
